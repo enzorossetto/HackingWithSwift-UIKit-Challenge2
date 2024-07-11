@@ -16,8 +16,13 @@ class ViewController: UITableViewController {
         
         title = "Shopping list"
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(emptyList))
+        let add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItem))
+        let clear = UIBarButtonItem(barButtonSystemItem: .trash, target: self, action: #selector(clearList))
+        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareList))
+        navigationController?.isToolbarHidden = false
+        toolbarItems = [clear, spacer, add]
     }
     
     @objc func addItem() {
@@ -41,9 +46,16 @@ class ViewController: UITableViewController {
         present(ac, animated: true)
     }
     
-    @objc func emptyList() {
+    @objc func clearList() {
         shoppingList.removeAll(keepingCapacity: true)
         tableView.reloadData()
+    }
+    
+    @objc func shareList() {
+        let listItemsString = shoppingList.joined(separator: "\n")
+        let vc = UIActivityViewController(activityItems: [listItemsString], applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
